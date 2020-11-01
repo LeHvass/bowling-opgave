@@ -13,13 +13,10 @@ import { PointsService } from './services/points.service';
 export class AppComponent {
   title = 'bowling-opgave';
 
-  testData: { points: [], token: string } = JSON.parse('{"points":[[1,7],[9,0],[9,1],[6,1],[6,1],[3,5],[8,0],[1,6],[9,1,1]],"token":"MMGWic7bgGffVlzLnlue2gEhXf3FUz8y"}');
-  //frames: number[][] = this.testData.points;
-  //points: number[] = [8,17,33,40,47,55,63,70,80];
-  //testData: { points: [], token: string } = JSON.parse('{"points":[[8,0],[9,1],[1,7],[6,1],[3,2],[0,2],[10,0],[4,5],[0,10],[5,3]],"token":"OfSfefnU3J9HQBj1T7sZ6f4dds17gurl"}');
   data: { points: [], token: string };
   frames: number[][];
   points: number[] = [];
+  response: string;
 
   constructor(private pointsService: PointsService) { }
 
@@ -28,19 +25,20 @@ export class AppComponent {
   }
 
   newGame() {
-    /*let data = this.pointsService.getPoints();
-    this.frames = data.points;
-    this.calculateScore(this.frames)*/
-
     this.pointsService.getPoints().subscribe(
       (data) => {
         this.frames = data.points;
         let token = data.token;
+
         this.points = this.calculateScore(data.points)
 
         this.pointsService.postPoints(this.points, token).subscribe(
-          (data) => {
-            console.log(data)
+          (data : {success: string, input: []}) => {
+            if (data.success) {
+              this.response = 'Score was validated successfully by server';
+            } else {
+              this.response = 'Score was NOT validated successfully by server';
+            }
           }
         )
       }
@@ -64,7 +62,9 @@ export class AppComponent {
 
     let frame = frames[index];
     if (this.isStrike(frame)) {
-      if (frames[index + 1] != null) {
+      if (index == 10) {
+        bonus = frames[index][1];
+      } else if (frames[index + 1] != null) {
         bonus = frames[index + 1][0];
 
         if (frames[index + 1][0] == 10 && frames[index + 2] != null) {
@@ -87,9 +87,9 @@ export class AppComponent {
     var points: number[] = [];
     var bonus: number = 0;
 
-    console.log(frames);
-
     for (let i = 0; i < frames.length; i++) {
+      if(i >= 10) break;
+      
       bonus = 0;
 
       const frame: number[] = frames[i];
@@ -100,12 +100,6 @@ export class AppComponent {
       points.push(score);
     }
 
-    /*console.log('Calculated');
-    console.log(points)
-    console.log('Correct');
-    //console.log([8,17,33,40,47,55,63,70,80])
-    console.log([8,19,27,34,39,41,60,69,84,92])*/
     return points;
-    //console.log(frames)
   }
 }

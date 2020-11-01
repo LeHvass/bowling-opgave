@@ -1,5 +1,5 @@
 import { AppPage } from './app.po';
-import { browser, logging } from 'protractor';
+import { browser, logging, element, by } from 'protractor';
 
 describe('workspace-project App', () => {
   let page: AppPage;
@@ -8,16 +8,23 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display welcome message', () => {
+  it('should load a scoresheet from the API and calculate the running scores', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('bowling-opgave app is running!');
-  });
 
-  afterEach(async () => {
-    // Assert that there are no errors emitted from the browser
-    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    expect(logs).not.toContain(jasmine.objectContaining({
-      level: logging.Level.SEVERE,
-    } as logging.Entry));
+    var loadBtn = element(by.id('btn-game-new'));
+    loadBtn.click().then(function () {
+      browser.sleep(2000)
+
+      var table = element(by.id('scoresheet'));
+      expect(table.isPresent()).toBe(true);
+    })
+
+    afterEach(async () => {
+      // Assert that there are no errors emitted from the browser
+      const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+      expect(logs).not.toContain(jasmine.objectContaining({
+        level: logging.Level.SEVERE,
+      } as logging.Entry));
+    });
   });
 });

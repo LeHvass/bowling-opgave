@@ -1,17 +1,20 @@
-<table class="mat-table">
-  <tr class="mat-header-row">
-    <th class="mat-header-cell" colspan="2" *ngFor="let frame of frames; let i = index">{{ i }}</th>
+<table id="scoresheet">
+  <tr>
+    <th [colSpan]="frames[i].length" *ngFor="let frame of frames; let i = index">{{ i + 1 }}</th>
   </tr>
-  <tr class="mat-row">
+  <tr>
     <ng-container *ngFor="let frame of frames; let i = index">
-      <td class="mat-cell" *ngFor="let roll of frame">{{ roll }}</td>
+      <td>{{ frame[0] == 10 ? 'X' : frame[0] }}</td>
+      <td>{{ (i == 10 && frame[1] == 10) ? 'X' : frame[0] == 10 ? '&nbsp;' : (frame[0] != 10 && frame[0] + frame[1] == 10) ? '/' : frame[1] }} </td>
     </ng-container>
   </tr>
-  <tr class="mat-row">
-    <td class="mat-cell" [colSpan]="frames[i].length" *ngFor="let point of points; let i = index">{{ point }}</td>
+  <tr>
+    <td [colSpan]="frames[i].length" *ngFor="let point of points; let i = index">{{ point }}</td>
   </tr>
 </table>
 
-<button mat-raised-button (click)="newGame()">Fetch New Scores from API</button>
+<p *ngIf="response">{{ response }}</p>
+
+<button id="btn-game-new" mat-raised-button (click)="newGame()">Fetch New Scores from API</button>
 
 <router-outlet></router-outlet>
